@@ -4,389 +4,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ポモドーロタイマー PRO | 集中力を最大化する作業タイマー</title>
-    <meta name="description" content="ポモドーロ・テクニックで集中力を最大化。25分作業+5分休憩のサイクルを自動管理。通知音・セッション記録付きの無料タイマー。">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>集中タイマー - 便利ツール集</title>
+    <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;600;700&display=swap"
-        rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] } } }
-        }
-    </script>
     <style>
         body {
-            background-color: #020617;
-            color: #f8fafc;
-            background-image: radial-gradient(at 0% 0%, hsla(250, 40%, 10%, 1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(270, 39%, 15%, 0.2) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(200, 49%, 15%, 0.2) 0, transparent 50%);
-            background-attachment: fixed;
+            background-color: #000000;
+            color: #00ff00;
+            font-family: "MS PGothic", "MS Pゴシック", sans-serif;
+            margin: 20px;
         }
 
-        .glass {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .container {
+            width: 400px;
+            margin: 0 auto;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            background-color: #111111;
         }
 
-        .timer-ring {
-            transition: stroke-dashoffset 1s linear;
+        .timer-display {
+            font-size: 80px;
+            font-weight: bold;
+            text-align: center;
+            border: 2px inset #00ff00;
+            margin-bottom: 20px;
+            background: #000;
+            text-shadow: 0 0 10px #00ff00;
+            font-family: 'Courier New', monospace;
         }
 
-        .mode-work {
-            --accent: #f43f5e;
-            --accent-glow: rgba(244, 63, 94, 0.2);
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .mode-break {
-            --accent: #10b981;
-            --accent-glow: rgba(16, 185, 129, 0.2);
+        button {
+            background-color: #333333;
+            color: #00ff00;
+            border: 2px outset #00ff00;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .mode-long-break {
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.2);
+        button:active {
+            border: 2px inset #00ff00;
         }
 
-        .gradient-text-work {
-            background: linear-gradient(to right, #f43f5e, #fb923c);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
         }
 
-        .gradient-text-break {
-            background: linear-gradient(to right, #10b981, #34d399);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            border-top: 1px dotted #00ff00;
+            padding-top: 10px;
         }
 
-        .gradient-text-long {
-            background: linear-gradient(to right, #6366f1, #a78bfa);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .pulse-glow {
-            animation: pulseGlow 2s infinite;
-        }
-
-        @keyframes pulseGlow {
-
-            0%,
-            100% {
-                box-shadow: 0 0 20px var(--accent-glow);
-            }
-
-            50% {
-                box-shadow: 0 0 40px var(--accent-glow), 0 0 60px var(--accent-glow);
-            }
-        }
-
-        .control-btn {
-            transition: all 0.2s ease;
-        }
-
-        .control-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .control-btn:active {
-            transform: scale(0.95);
+        a {
+            color: #00ff00;
         }
     </style>
-    <meta name="google-site-verification" content="nDfNlMk2wvPV-koGT7Ur1MandTe503qb1CQ0kJw6fdA" />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5383957100145583"
-        crossorigin="anonymous"></script>
 </head>
 
-<body class="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl mx-auto">
-        <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight font-display">
-                <span class="gradient-text-work">Pomodoro</span> PRO
-            </h1>
-            <p class="text-slate-400 text-lg max-w-2xl mx-auto">25分の集中と5分の休息。科学が証明した最強の時間管理メソッド。</p>
-        </div>
-
-        <div class="mb-10 text-center flex justify-center w-full min-h-[90px]">
-            <!-- ■■■ 広告タグ貼り付け位置（トップ） ■■■ -->
-        </div>
+<body>
+    <div class="container">
+        <h2 style="text-align: center; margin-top: 0;">Pomodoro Timer</h2>
 
         <div id="root"></div>
 
-        <!-- SEO -->
-        <div class="mt-16 pt-12 border-t border-slate-800/80">
-            <section class="mb-12">
-                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-white flex items-center">
-                    <span class="w-1.5 h-8 bg-rose-500 rounded-full mr-4 inline-block"></span>
-                    ポモドーロ・テクニックとは？
-                </h2>
-                <div class="space-y-4 text-slate-300 leading-relaxed text-base">
-                    <p>「ポモドーロ・テクニック」は、1980年代にイタリアの大学生フランチェスコ・シリロが考案した<strong>時間管理術</strong>です。キッチンタイマー（トマト型＝ポモドーロ）を使って「25分の集中作業
-                        + 5分の短い休憩」を1セットとし、これを4回繰り返したら15〜30分の長い休憩を取るというシンプルなメソッドです。</p>
-                    <p>このテクニックが効果的な理由は、<strong>人間の集中力には限界がある</strong>ということを前提に設計されている点にあります。短いスプリントを繰り返すことで、長時間ダラダラと作業するよりも圧倒的に高い生産性を実現できます。
-                    </p>
-                </div>
-            </section>
-            <section class="mb-12">
-                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-white flex items-center">
-                    <span class="w-1.5 h-8 bg-emerald-500 rounded-full mr-4 inline-block"></span>
-                    効果的な使い方
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-800/40 rounded-xl p-6 border border-slate-700/50">
-                        <h3 class="text-lg font-bold text-white mb-2">🎯 タスクを明確に</h3>
-                        <p class="text-sm text-slate-400">タイマーを始める前に「この25分で何をやるか」を決めましょう。曖昧な目標は集中力を削ぎます。</p>
-                    </div>
-                    <div class="bg-slate-800/40 rounded-xl p-6 border border-slate-700/50">
-                        <h3 class="text-lg font-bold text-white mb-2">📵 通知をオフに</h3>
-                        <p class="text-sm text-slate-400">25分間はスマホの通知を切り、SNSも閉じましょう。中断は集中状態を壊し、復帰に23分かかるという研究結果があります。
-                        </p>
-                    </div>
-                    <div class="bg-slate-800/40 rounded-xl p-6 border border-slate-700/50">
-                        <h3 class="text-lg font-bold text-white mb-2">☕ 休憩は本当に休む</h3>
-                        <p class="text-sm text-slate-400">休憩時間にSNSを見るのはNG。立ち上がる、ストレッチする、水を飲むなど、脳を休ませる行動を取りましょう。</p>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <div class="mt-12 text-center flex justify-center w-full min-h-[250px]">
-            <!-- ■■■ 広告タグ貼り付け位置（ボトム） ■■■ -->
+        <div class="footer">
+            [ <a href="../00_Portal/index.html">便利ツール集ポータルへ戻る</a> ]
         </div>
     </div>
 
     <script type="text/babel">
-        const MODES = {
-            work: { label: '集中', minutes: 25, color: 'rose', gradient: 'gradient-text-work', modeClass: 'mode-work' },
-            break: { label: '休憩', minutes: 5, color: 'emerald', gradient: 'gradient-text-break', modeClass: 'mode-break' },
-            longBreak: { label: '長い休憩', minutes: 15, color: 'indigo', gradient: 'gradient-text-long', modeClass: 'mode-long-break' },
-        };
-
         const App = () => {
-            const [mode, setMode] = React.useState('work');
-            const [timeLeft, setTimeLeft] = React.useState(MODES.work.minutes * 60);
+            const [timeLeft, setTimeLeft] = React.useState(25 * 60);
             const [isRunning, setIsRunning] = React.useState(false);
-            const [sessions, setSessions] = React.useState(0);
-            const [totalFocusTime, setTotalFocusTime] = React.useState(0);
-            const [customWork, setCustomWork] = React.useState(25);
-            const [customBreak, setCustomBreak] = React.useState(5);
-            const [customLong, setCustomLong] = React.useState(15);
-            const [showSettings, setShowSettings] = React.useState(false);
-
-            const currentMode = MODES[mode];
-            const totalSeconds = mode === 'work' ? customWork * 60 : mode === 'break' ? customBreak * 60 : customLong * 60;
-            const progress = 1 - timeLeft / totalSeconds;
-
-            // ビープ音生成
-            const playBeep = () => {
-                try {
-                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.frequency.value = 800;
-                    osc.type = 'sine';
-                    gain.gain.value = 0.3;
-                    osc.start();
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-                    osc.stop(ctx.currentTime + 0.8);
-                    // 2回目
-                    setTimeout(() => {
-                        const osc2 = ctx.createOscillator();
-                        const gain2 = ctx.createGain();
-                        osc2.connect(gain2);
-                        gain2.connect(ctx.destination);
-                        osc2.frequency.value = 1000;
-                        osc2.type = 'sine';
-                        gain2.gain.value = 0.3;
-                        osc2.start();
-                        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
-                        osc2.stop(ctx.currentTime + 1);
-                    }, 300);
-                } catch (e) { }
-            };
 
             React.useEffect(() => {
-                if (!isRunning) return;
-                const interval = setInterval(() => {
-                    setTimeLeft(prev => {
-                        if (prev <= 1) {
-                            clearInterval(interval);
-                            setIsRunning(false);
-                            playBeep();
-                            // 自動遷移
-                            if (mode === 'work') {
-                                setSessions(s => s + 1);
-                                setTotalFocusTime(t => t + customWork);
-                                const nextSessions = sessions + 1;
-                                if (nextSessions % 4 === 0) {
-                                    setMode('longBreak');
-                                    setTimeLeft(customLong * 60);
-                                } else {
-                                    setMode('break');
-                                    setTimeLeft(customBreak * 60);
-                                }
-                            } else {
-                                setMode('work');
-                                setTimeLeft(customWork * 60);
-                            }
-                            return 0;
-                        }
-                        return prev - 1;
-                    });
-                }, 1000);
+                let interval;
+                if (isRunning && timeLeft > 0) {
+                    interval = setInterval(() => {
+                        setTimeLeft(prev => prev - 1);
+                    }, 1000);
+                } else if (timeLeft === 0) {
+                    setIsRunning(false);
+                    alert("時間になりました！");
+                }
                 return () => clearInterval(interval);
-            }, [isRunning, mode, sessions, customWork, customBreak, customLong]);
-
-            // タイトル更新
-            React.useEffect(() => {
-                const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-                const s = String(timeLeft % 60).padStart(2, '0');
-                document.title = `${m}:${s} - ${currentMode.label} | Pomodoro PRO`;
-            }, [timeLeft, mode]);
-
-            const switchMode = (newMode) => {
-                setIsRunning(false);
-                setMode(newMode);
-                const mins = newMode === 'work' ? customWork : newMode === 'break' ? customBreak : customLong;
-                setTimeLeft(mins * 60);
-            };
-
-            const reset = () => {
-                setIsRunning(false);
-                const mins = mode === 'work' ? customWork : mode === 'break' ? customBreak : customLong;
-                setTimeLeft(mins * 60);
-            };
+            }, [isRunning, timeLeft]);
 
             const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
             const seconds = String(timeLeft % 60).padStart(2, '0');
 
-            // SVG circle
-            const radius = 140;
-            const circumference = 2 * Math.PI * radius;
-            const dashOffset = circumference * (1 - progress);
-
-            const accentColors = { work: '#f43f5e', break: '#10b981', longBreak: '#6366f1' };
-
             return (
-                <div className={`space-y-6 ${currentMode.modeClass}`}>
-                    {/* モード切替 */}
-                    <div className="flex justify-center gap-2">
-                        {Object.entries(MODES).map(([key, m]) => (
-                            <button key={key} onClick={() => switchMode(key)}
-                                className={`px-5 py-2.5 rounded-xl text-sm font-medium border transition-all ${mode === key ? `bg-${m.color}-500/20 border-${m.color}-500/50 text-white` : 'border-slate-700 text-slate-400 hover:text-white'}`}>
-                                {m.label}
-                            </button>
-                        ))}
+                <div>
+                    <div class="timer-display">{minutes}:{seconds}</div>
+
+                    <div class="controls">
+                        <button onClick={() => setIsRunning(!isRunning)}>
+                            {isRunning ? '停止' : '開始'}
+                        </button>
+                        <button onClick={() => { setIsRunning(false); setTimeLeft(25 * 60); }}>
+                            リセット
+                        </button>
                     </div>
 
-                    {/* タイマー本体 */}
-                    <div className={`glass rounded-3xl p-8 md:p-12 shadow-2xl ${isRunning ? 'pulse-glow' : ''}`}>
-                        <div className="flex flex-col items-center">
-                            {/* 円形タイマー */}
-                            <div className="relative w-72 h-72 md:w-80 md:h-80 mb-6">
-                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 300 300">
-                                    <circle cx="150" cy="150" r={radius} stroke="rgba(51, 65, 85, 0.5)" strokeWidth="8" fill="none" />
-                                    <circle cx="150" cy="150" r={radius} stroke={accentColors[mode]} strokeWidth="8" fill="none"
-                                        strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={dashOffset}
-                                        className="timer-ring" />
-                                </svg>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <div className={`text-6xl md:text-7xl font-bold font-display tracking-wider ${currentMode.gradient}`}>
-                                        {minutes}:{seconds}
-                                    </div>
-                                    <div className="text-slate-400 text-sm mt-2">{currentMode.label}モード</div>
-                                </div>
-                            </div>
-
-                            {/* コントロール */}
-                            <div className="flex gap-4">
-                                <button onClick={() => setIsRunning(!isRunning)}
-                                    className={`control-btn px-8 py-3.5 rounded-xl font-semibold text-lg shadow-lg ${isRunning
-                                        ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                                        : `bg-${currentMode.color}-500 hover:bg-${currentMode.color}-400 text-white shadow-${currentMode.color}-500/30`}`}>
-                                    {isRunning ? '⏸ 一時停止' : '▶ スタート'}
-                                </button>
-                                <button onClick={reset}
-                                    className="control-btn px-5 py-3.5 rounded-xl font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
-                                    🔄 リセット
-                                </button>
-                                <button onClick={() => setShowSettings(!showSettings)}
-                                    className="control-btn px-5 py-3.5 rounded-xl font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
-                                    ⚙️
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 設定パネル */}
-                    {showSettings && (
-                        <div className="glass rounded-2xl p-6 shadow-xl">
-                            <h3 className="text-lg font-semibold mb-4">⚙️ 時間設定（分）</h3>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm text-slate-400 mb-2">集中</label>
-                                    <input type="number" value={customWork} min="1" max="60"
-                                        onChange={(e) => { setCustomWork(Number(e.target.value)); if (mode === 'work' && !isRunning) setTimeLeft(Number(e.target.value) * 60); }}
-                                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white text-center focus:outline-none focus:ring-2 focus:ring-rose-500" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-slate-400 mb-2">短い休憩</label>
-                                    <input type="number" value={customBreak} min="1" max="30"
-                                        onChange={(e) => { setCustomBreak(Number(e.target.value)); if (mode === 'break' && !isRunning) setTimeLeft(Number(e.target.value) * 60); }}
-                                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white text-center focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-slate-400 mb-2">長い休憩</label>
-                                    <input type="number" value={customLong} min="1" max="60"
-                                        onChange={(e) => { setCustomLong(Number(e.target.value)); if (mode === 'longBreak' && !isRunning) setTimeLeft(Number(e.target.value) * 60); }}
-                                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white text-center focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* セッション統計 */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="glass rounded-xl p-5 text-center">
-                            <div className="text-3xl font-bold text-rose-400">{sessions}</div>
-                            <div className="text-sm text-slate-400 mt-1">完了セッション</div>
-                        </div>
-                        <div className="glass rounded-xl p-5 text-center">
-                            <div className="text-3xl font-bold text-emerald-400">{totalFocusTime}分</div>
-                            <div className="text-sm text-slate-400 mt-1">累計集中時間</div>
-                        </div>
-                    </div>
-
-                    {/* ポモドーロドット */}
-                    <div className="glass rounded-xl p-4">
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="text-sm text-slate-400 mr-2">今日の進捗：</span>
-                            {Array.from({ length: Math.max(8, sessions) }, (_, i) => (
-                                <div key={i} className={`w-4 h-4 rounded-full transition-all ${i < sessions ? 'bg-rose-500 shadow-lg shadow-rose-500/30' : 'bg-slate-700'}`}></div>
-                            ))}
-                        </div>
+                    <div class="status">
+                        {isRunning ? '>>> 集中モード中 <<<' : '待機中'}
                     </div>
                 </div>
             );
         };
+
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
-
-<!-- admax -->
-<script src="https://adm.shinobi.jp/s/5dfe8bfce49a43ffe78096b109972b5b"></script>
-<!-- admax -->
 </body>
 
 </html>
